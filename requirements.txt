@@ -1,0 +1,16 @@
+# GearGuard+ Maintenance Management System
+# Python Dependencies
+
+# Core application (no dependencies)
+# python app.py  # Uses only standard library
+
+# Web interface (optional)
+Flask>=2.3.0  # For web UI
+
+# Database (SQLite is built-in, no extra package needed)
+# SQLite comes with Python standard library
+
+# Optional: For enhanced features
+# pandas>=1.5.0  # For advanced analytics
+# matplotlib>=3.6.0  # For chart generation
+

@@ -1,0 +1,21 @@
+{
+    "name": "GearGuard+ Maintenance Management System",
+    "version": "1.0.0",
+    "description": "Enterprise-grade predictive and proactive asset management system",
+    "author": "GearGuard+ Team",
+    "category": "Maintenance",
+    "depends": [],
+    "data": [
+        "views/employee_views.xml",
+        "views/maintenance_team_views.xml",
+        "views/equipment_views.xml",
+        "views/maintenance_request_views.xml",
+        "views/dashboard_views.xml"
+    ],
+    "installable": true,
+    "application": true,
+    "auto_install": false,
+    "license": "LGPL-3",
+    "summary": "Predictive maintenance management with health scoring and workload balancing"
+}
+
