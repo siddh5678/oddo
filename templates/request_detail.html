@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}{{ request.subject }} - GearGuard+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="bi bi-tools"></i> {{ request.subject }}</h1>
+        <p class="text-muted">Maintenance Request Details</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('requests_list') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+    </div>
+</div>
+
+{% if request.is_overdue %}
+<div class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle-fill"></i> <strong>OVERDUE:</strong> This maintenance request is past its scheduled date.
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Request Information</h5>
+                <span class="badge bg-{{ 'success' if request.state == 'repaired' else ('warning' if request.state == 'in_progress' else ('danger' if request.state == 'scrap' else 'info')) }}">
+                    {{ request.state|replace('_', ' ')|title }}
+                </span>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="30%">Subject:</th>
+                        <td>{{ request.subject }}</td>
+                    </tr>
+                    <tr>
+                        <th>Request Type:</th>
+                        <td>
+                            <span class="badge bg-{{ 'info' if request.request_type == 'preventive' else 'warning' }}">
+                                {{ request.request_type|title }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Equipment:</th>
+                        <td>
+                            {% if request.equipment %}
+                                <a href="{{ url_for('equipment_detail', equipment_id=request.equipment_id) }}">
+                                    {{ request.equipment.name }}
+                                </a>
+                                {% if request.equipment.maintenance_team_id %}
+                                    <br><small class="text-muted">
+                                        <i class="bi bi-people"></i> Team: 
+                                        <span class="badge bg-info">{{ request.equipment.maintenance_team_id }}</span>
+                                    </small>
+                                {% endif %}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Maintenance Team:</th>
+                        <td>
+                            {% if request.maintenance_team_id %}
+                                <span class="badge bg-primary">
+                                    <i class="bi bi-people"></i> Team ID: {{ request.maintenance_team_id }}
+                                </span>
+                                <small class="text-muted ms-2">
+                                    (Auto-assigned from equipment)
+                                </small>
+                            {% else %}
+                                <span class="text-muted">Not assigned</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Scheduled Date:</th>
+                        <td>{{ request.scheduled_date or 'Not scheduled' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Duration:</th>
+                        <td>{{ request.duration or 'Not set' }} {% if request.duration %}hours{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <th>Description:</th>
+                        <td>{{ request.description or 'No description' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Actions</h5>
+            </div>
+            <div class="card-body">
+                {% if request.state == 'new' %}
+                    <form method="POST" action="{{ url_for('request_action', request_id=request.id) }}" class="mb-2">
+                        <input type="hidden" name="action" value="start">
+                        <button type="submit" class="btn btn-warning btn-block w-100">
+                            <i class="bi bi-play-circle"></i> Start Maintenance
+                        </button>
+                    </form>
+                {% endif %}
+                
+                {% if request.state in ['new', 'in_progress'] %}
+                    <form method="POST" action="{{ url_for('request_action', request_id=request.id) }}" class="mb-2">
+                        <input type="hidden" name="action" value="repair">
+                        <div class="mb-2">
+                            <label for="duration" class="form-label small">Duration (hours):</label>
+                            <input type="number" step="0.1" class="form-control form-control-sm" 
+                                   id="duration" name="duration" 
+                                   value="{{ request.duration or '' }}" required>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-block w-100">
+                            <i class="bi bi-check-circle"></i> Mark as Repaired
+                        </button>
+                    </form>
+                    
+                    <form method="POST" action="{{ url_for('request_action', request_id=request.id) }}">
+                        <input type="hidden" name="action" value="scrap">
+                        <button type="submit" class="btn btn-danger btn-block w-100" 
+                                onclick="return confirm('Are you sure you want to scrap this equipment?')">
+                            <i class="bi bi-trash"></i> Scrap Equipment
+                        </button>
+                    </form>
+                {% endif %}
+                
+                {% if request.state == 'repaired' %}
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle"></i> This request has been completed.
+                    </div>
+                {% endif %}
+                
+                {% if request.state == 'scrap' %}
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle"></i> Equipment has been scrapped.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

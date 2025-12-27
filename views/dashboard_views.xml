@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Dashboard View -->
+    <record id="view_dashboard_form" model="ir.ui.view">
+        <field name="name">dashboard.form</field>
+        <field name="model">dashboard</field>
+        <field name="arch" type="xml">
+            <form string="GearGuard+ Dashboard" create="false" delete="false">
+                <sheet>
+                    <div class="oe_dashboard">
+                        <!-- KPIs Section -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h2>Key Performance Indicators</h2>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h3 class="text-primary" t-esc="kpis.total_equipment"/>
+                                        <p>Total Equipment</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h3 class="text-warning" t-esc="kpis.open_requests"/>
+                                        <p>Open Requests</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h3 class="text-danger" t-esc="kpis.overdue_requests"/>
+                                        <p>Overdue Requests</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h3 class="text-danger" t-esc="kpis.critical_equipment"/>
+                                        <p>Critical Health Equipment</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Predictive Alerts Section -->
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <h2>Predictive Maintenance Alerts</h2>
+                                <div class="alert alert-warning" role="alert" t-if="not alerts">
+                                    <strong>No alerts:</strong> All equipment is operating normally.
+                                </div>
+                                <div t-foreach="alerts" t-as="alert" class="mt-2">
+                                    <div class="alert" 
+                                         t-attf-class="alert-#{alert.severity == 'critical' ? 'danger' : 'warning'}" 
+                                         role="alert">
+                                        <h5>
+                                            <i class="fa fa-exclamation-triangle"/> 
+                                            <t t-esc="alert.equipment_name"/>
+                                        </h5>
+                                        <p>
+                                            <strong>Health Score:</strong> <t t-esc="alert.health_score"/>/100<br/>
+                                            <strong>Breakdowns (30 days):</strong> <t t-esc="alert.breakdown_count"/><br/>
+                                            <strong>Issues:</strong>
+                                            <ul>
+                                                <li t-foreach="alert.reasons" t-as="reason">
+                                                    <t t-esc="reason"/>
+                                                </li>
+                                            </ul>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Section -->
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h3>Preventive vs Corrective</h3>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p><strong>Preventive:</strong> <t t-esc="preventive_vs_corrective.preventive"/></p>
+                                        <p><strong>Corrective:</strong> <t t-esc="preventive_vs_corrective.corrective"/></p>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-info" 
+                                                 role="progressbar" 
+                                                 t-attf-style="width: #{preventive_vs_corrective.preventive / (preventive_vs_corrective.preventive + preventive_vs_corrective.corrective) * 100}%">
+                                                Preventive
+                                            </div>
+                                            <div class="progress-bar bg-warning" 
+                                                 role="progressbar" 
+                                                 t-attf-style="width: #{preventive_vs_corrective.corrective / (preventive_vs_corrective.preventive + preventive_vs_corrective.corrective) * 100}%">
+                                                Corrective
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h3>Requests per Team</h3>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Team</th>
+                                                    <th>Requests</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr t-foreach="requests_per_team" t-as="team">
+                                                    <td><t t-esc="team.team_name"/></td>
+                                                    <td><t t-esc="team.request_count"/></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Technician Workload Section -->
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <h3>Technician Workload Balancing</h3>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Technician</th>
+                                                    <th>Open Tasks</th>
+                                                    <th>Workload</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr t-foreach="technician_workloads" t-as="workload">
+                                                    <td><t t-esc="workload.technician_name"/></td>
+                                                    <td><t t-esc="workload.workload"/></td>
+                                                    <td>
+                                                        <div class="progress">
+                                                            <div class="progress-bar" 
+                                                                 role="progressbar" 
+                                                                 t-attf-style="width: #{workload.workload * 10}%"
+                                                                 t-attf-class="#{workload.workload > 5 ? 'bg-danger' : (workload.workload > 3 ? 'bg-warning' : 'bg-success')}">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Dashboard Action -->
+    <record id="action_dashboard_view" model="ir.actions.act_window">
+        <field name="name">GearGuard+ Dashboard</field>
+        <field name="res_model">dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_maintenance_root" 
+              name="GearGuard+" 
+              sequence="10"/>
+    
+    <menuitem id="menu_dashboard" 
+              name="Dashboard" 
+              parent="menu_maintenance_root" 
+              action="action_dashboard_view" 
+              sequence="1"/>
+    
+    <menuitem id="menu_equipment" 
+              name="Equipment" 
+              parent="menu_maintenance_root" 
+              action="action_equipment_view" 
+              sequence="2"/>
+    
+    <menuitem id="menu_maintenance_requests" 
+              name="Maintenance Requests" 
+              parent="menu_maintenance_root" 
+              action="action_maintenance_request_view" 
+              sequence="3"/>
+    
+    <menuitem id="menu_maintenance_teams" 
+              name="Maintenance Teams" 
+              parent="menu_maintenance_root" 
+              action="action_maintenance_team_view" 
+              sequence="4"/>
+</odoo>
+

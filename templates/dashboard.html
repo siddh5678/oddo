@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - GearGuard+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-speedometer2"></i> Dashboard</h1>
+        <p class="text-muted">Real-time maintenance management overview</p>
+    </div>
+</div>
+
+<!-- KPIs -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-center border-primary">
+            <div class="card-body">
+                <h2 class="text-primary">{{ kpis.total_equipment }}</h2>
+                <p class="card-text text-muted">Total Equipment</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center border-warning">
+            <div class="card-body">
+                <h2 class="text-warning">{{ kpis.open_requests }}</h2>
+                <p class="card-text text-muted">Open Requests</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center border-danger">
+            <div class="card-body">
+                <h2 class="text-danger">{{ kpis.overdue_requests }}</h2>
+                <p class="card-text text-muted">Overdue Requests</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center border-danger">
+            <div class="card-body">
+                <h2 class="text-danger">{{ kpis.critical_equipment }}</h2>
+                <p class="card-text text-muted">Critical Health</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Predictive Alerts -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Predictive Maintenance Alerts</h5>
+            </div>
+            <div class="card-body">
+                {% if alerts %}
+                    {% for alert in alerts %}
+                        <div class="alert alert-{{ 'danger' if alert.severity == 'critical' else 'warning' }} mb-3">
+                            <h6><i class="bi bi-exclamation-triangle-fill"></i> {{ alert.equipment_name }}</h6>
+                            <p class="mb-1"><strong>Health Score:</strong> {{ alert.health_score }}/100</p>
+                            <p class="mb-1"><strong>Breakdowns (30 days):</strong> {{ alert.breakdown_count }}</p>
+                            <ul class="mb-0">
+                                {% for reason in alert.reasons %}
+                                    <li>{{ reason }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle"></i> No alerts - all equipment operating normally
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Preventive vs Corrective</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Preventive:</strong> {{ preventive_vs_corrective.preventive }}</p>
+                <p><strong>Corrective:</strong> {{ preventive_vs_corrective.corrective }}</p>
+                {% set total = preventive_vs_corrective.preventive + preventive_vs_corrective.corrective %}
+                {% if total > 0 %}
+                    {% set preventive_pct = (preventive_vs_corrective.preventive / total * 100) | round(1) %}
+                    {% set corrective_pct = (preventive_vs_corrective.corrective / total * 100) | round(1) %}
+                    <div class="progress" style="height: 30px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ preventive_pct }}%">
+                            Preventive {{ preventive_pct }}%
+                        </div>
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ corrective_pct }}%">
+                            Corrective {{ corrective_pct }}%
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Requests per Team</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Requests</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for team in requests_per_team %}
+                            <tr>
+                                <td>{{ team.team_name }}</td>
+                                <td><span class="badge bg-primary">{{ team.request_count }}</span></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Technician Workloads -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-people"></i> Technician Workload Balancing</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Technician</th>
+                            <th>Open Tasks</th>
+                            <th>Workload Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for workload in technician_workloads %}
+                            <tr>
+                                <td>{{ workload.technician_name }}</td>
+                                <td><span class="badge bg-secondary">{{ workload.workload }}</span></td>
+                                <td>
+                                    {% if workload.workload > 5 %}
+                                        <span class="badge bg-danger">High</span>
+                                    {% elif workload.workload > 3 %}
+                                        <span class="badge bg-warning">Medium</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Low</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

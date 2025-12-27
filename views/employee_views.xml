@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Employee Tree View -->
+    <record id="view_employee_tree" model="ir.ui.view">
+        <field name="name">employee.tree</field>
+        <field name="model">employee</field>
+        <field name="arch" type="xml">
+            <tree string="Employees">
+                <field name="name"/>
+                <field name="email"/>
+                <field name="department"/>
+                <field name="is_technician" widget="boolean_toggle"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Employee Form View -->
+    <record id="view_employee_form" model="ir.ui.view">
+        <field name="name">employee.form</field>
+        <field name="model">employee</field>
+        <field name="arch" type="xml">
+            <form string="Employee">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="email"/>
+                            <field name="phone"/>
+                        </group>
+                        <group>
+                            <field name="department"/>
+                            <field name="is_technician" widget="boolean_toggle"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Employee Search View -->
+    <record id="view_employee_search" model="ir.ui.view">
+        <field name="name">employee.search</field>
+        <field name="model">employee</field>
+        <field name="arch" type="xml">
+            <search string="Employees">
+                <field name="name"/>
+                <field name="email"/>
+                <field name="department"/>
+                <filter string="Technicians" name="technicians" domain="[('is_technician', '=', True)]"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Employee Action -->
+    <record id="action_employee_view" model="ir.actions.act_window">
+        <field name="name">Employees</field>
+        <field name="res_model">employee</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_employee_search"/>
+    </record>
+</odoo>
+

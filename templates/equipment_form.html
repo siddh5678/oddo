@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}{% if equipment %}Edit{% else %}Create{% endif %} Equipment - GearGuard+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-gear"></i> {% if equipment %}Edit{% else %}Create{% endif %} Equipment</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Equipment Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" 
+                               value="{{ equipment.name if equipment else '' }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="serial_number" class="form-label">Serial Number</label>
+                        <input type="text" class="form-control" id="serial_number" name="serial_number"
+                               value="{{ equipment.serial_number if equipment else '' }}">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="department" class="form-label">Department</label>
+                            <input type="text" class="form-control" id="department" name="department"
+                                   value="{{ equipment.department if equipment else '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="location" name="location"
+                                   value="{{ equipment.location if equipment else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="maintenance_team_id" class="form-label">
+                                <i class="bi bi-people"></i> Maintenance Team 
+                                <span class="badge bg-info" data-bs-toggle="tooltip" 
+                                      title="This team will be automatically assigned to all maintenance requests for this equipment">
+                                    <i class="bi bi-info-circle"></i> Auto-Assign
+                                </span>
+                            </label>
+                            <select class="form-select" id="maintenance_team_id" name="maintenance_team_id">
+                                <option value="">-- Select Team (Required for Auto-Assignment) --</option>
+                                {% for team in teams %}
+                                    <option value="{{ team.id }}" 
+                                            {% if equipment and equipment.maintenance_team_id == team.id %}selected{% endif %}>
+                                        {{ team.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-lightbulb"></i> Selected team will be auto-assigned to all maintenance requests for this equipment
+                            </small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="assigned_employee_id" class="form-label">
+                                <i class="bi bi-person-badge"></i> Equipment Operator / Responsible Employee
+                                <span class="badge bg-info" data-bs-toggle="tooltip" 
+                                      title="The employee who operates or is responsible for this equipment (not the maintenance technician)">
+                                    <i class="bi bi-info-circle"></i> Operator
+                                </span>
+                            </label>
+                            <select class="form-select" id="assigned_employee_id" name="assigned_employee_id">
+                                <option value="">-- Select Operator (Optional) --</option>
+                                {% for employee in employees %}
+                                    <option value="{{ employee.id }}"
+                                            {% if equipment and equipment.assigned_employee_id == employee.id %}selected{% endif %}>
+                                        {{ employee.name }}
+                                        {% if employee.department %}
+                                            ({{ employee.department }})
+                                        {% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-lightbulb"></i> 
+                                <strong>Who operates this equipment?</strong> Select the employee who uses/operates this equipment daily. 
+                                This is different from maintenance technicians who repair it.
+                                <br>
+                                <strong>Example:</strong> Production operator, Machine operator, Facility manager, etc.
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="purchase_date" class="form-label">Purchase Date</label>
+                            <input type="date" class="form-control" id="purchase_date" name="purchase_date"
+                                   value="{{ equipment.purchase_date if equipment else '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="warranty_end_date" class="form-label">Warranty End Date</label>
+                            <input type="date" class="form-control" id="warranty_end_date" name="warranty_end_date"
+                                   value="{{ equipment.warranty_end_date if equipment else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Equipment
+                        </button>
+                        <a href="{{ url_for('equipment_list') }}" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

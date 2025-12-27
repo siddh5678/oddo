@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}{% if request %}Edit{% else %}Create{% endif %} Maintenance Request - GearGuard+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-tools"></i> {% if request %}Edit{% else %}Create{% endif %} Maintenance Request</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="subject" name="subject" 
+                               value="{{ request.subject if request else '' }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="equipment_id" class="form-label">Equipment <span class="text-danger">*</span></label>
+                        <select class="form-select" id="equipment_id" name="equipment_id" required>
+                            <option value="">-- Select Equipment --</option>
+                            {% for equipment in equipments %}
+                                <option value="{{ equipment.id }}"
+                                        {% if request and request.equipment_id == equipment.id %}selected{% endif %}>
+                                    {{ equipment.name }} ({{ equipment.serial_number or 'N/A' }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <small class="form-text text-muted">Maintenance team will be auto-assigned from equipment</small>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="request_type" class="form-label">Request Type</label>
+                            <select class="form-select" id="request_type" name="request_type">
+                                <option value="corrective" {% if request and request.request_type == 'corrective' %}selected{% endif %}>
+                                    Corrective
+                                </option>
+                                <option value="preventive" {% if request and request.request_type == 'preventive' %}selected{% endif %}>
+                                    Preventive
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="scheduled_date" class="form-label">Scheduled Date</label>
+                            <input type="date" class="form-control" id="scheduled_date" name="scheduled_date"
+                                   value="{{ request.scheduled_date if request else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="technician_id" class="form-label">
+                            <i class="bi bi-person-workspace"></i> Technician
+                            <span class="badge bg-warning" data-bs-toggle="tooltip" 
+                                  title="Only technicians from the assigned maintenance team can be selected">
+                                <i class="bi bi-shield-check"></i> Team Filtered
+                            </span>
+                        </label>
+                        <select class="form-select" id="technician_id" name="technician_id">
+                            <option value="">-- Select Technician --</option>
+                            {% for technician in technicians %}
+                                <option value="{{ technician.id }}"
+                                        {% if request and request.technician_id == technician.id %}selected{% endif %}>
+                                    {{ technician.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Only technicians from the assigned maintenance team are available. 
+                            <strong>Equipment selection will auto-assign the team.</strong>
+                        </small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="4">{{ request.description if request else '' }}</textarea>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Request
+                        </button>
+                        <a href="{{ url_for('requests_list') }}" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

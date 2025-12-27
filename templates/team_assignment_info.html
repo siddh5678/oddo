@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Team Assignment Guide - GearGuard+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-diagram-3"></i> Technical Team Assignment Guide</h1>
+        <p class="text-muted">Complete guide on how teams are assigned to equipment and maintenance requests</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-arrow-right-circle"></i> Assignment Flow</h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item mb-4">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <div class="timeline-marker bg-primary">
+                                    <i class="bi bi-1-circle-fill text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6>Equipment Creation</h6>
+                                <p class="mb-0">When creating or editing equipment, select a <strong>Maintenance Team</strong> from the dropdown.</p>
+                                <small class="text-muted">Location: Equipment → Create/Edit → Maintenance Team field</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item mb-4">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <div class="timeline-marker bg-success">
+                                    <i class="bi bi-2-circle-fill text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6>Automatic Team Assignment</h6>
+                                <p class="mb-0">When creating a maintenance request and selecting equipment, the system <strong>automatically assigns</strong> the team from that equipment.</p>
+                                <small class="text-muted">No manual selection needed - happens automatically!</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item mb-4">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <div class="timeline-marker bg-warning">
+                                    <i class="bi bi-3-circle-fill text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6>Technician Selection</h6>
+                                <p class="mb-0">The technician dropdown shows <strong>only technicians from the assigned team</strong>. Select a technician from the filtered list.</p>
+                                <small class="text-muted">System validates that technician belongs to the team</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <div class="timeline-marker bg-info">
+                                    <i class="bi bi-check-circle-fill text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6>Request Created</h6>
+                                <p class="mb-0">Maintenance request is created with team and technician assigned. Ready for workflow!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Key Features</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
+                            <div>
+                                <h6>Auto-Assignment</h6>
+                                <p class="small mb-0">Team automatically assigned from equipment - no manual work needed</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-shield-check text-primary me-2 fs-5"></i>
+                            <div>
+                                <h6>Validation</h6>
+                                <p class="small mb-0">System ensures technician belongs to assigned team</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-arrow-repeat text-warning me-2 fs-5"></i>
+                            <div>
+                                <h6>Manual Override</h6>
+                                <p class="small mb-0">Can manually change team in request if needed</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-funnel text-danger me-2 fs-5"></i>
+                            <div>
+                                <h6>Filtered Technicians</h6>
+                                <p class="small mb-0">Only team members shown in technician dropdown</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-list-check"></i> Quick Steps</h5>
+            </div>
+            <div class="card-body">
+                <ol class="mb-0">
+                    <li class="mb-2">Create/Edit Equipment</li>
+                    <li class="mb-2">Select Maintenance Team</li>
+                    <li class="mb-2">Save Equipment</li>
+                    <li class="mb-2">Create Maintenance Request</li>
+                    <li class="mb-2">Select Equipment (Team auto-assigned)</li>
+                    <li class="mb-2">Select Technician (from team)</li>
+                    <li class="mb-2">Complete Request</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Important Rules</h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0 small">
+                    <li>Equipment must have a team assigned</li>
+                    <li>Technician must be team member</li>
+                    <li>Team can be changed manually in request</li>
+                    <li>Multiple technicians per team allowed</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-link-45deg"></i> Quick Links</h5>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('equipment_list') }}" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                    <i class="bi bi-gear"></i> Manage Equipment
+                </a>
+                <a href="{{ url_for('teams_list') }}" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                    <i class="bi bi-people"></i> View Teams
+                </a>
+                <a href="{{ url_for('requests_list') }}" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="bi bi-tools"></i> Maintenance Requests
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .timeline-marker {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+    
+    .timeline-item {
+        position: relative;
+    }
+    
+    .timeline-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 50px;
+        width: 2px;
+        height: calc(100% - 20px);
+        background: #e9ecef;
+    }
+</style>
+{% endblock %}
+

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Maintenance Requests - GearGuard+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="bi bi-tools"></i> Maintenance Requests</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('request_create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Request
+        </a>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('requests_list', view='list') }}" 
+               class="btn btn-outline-primary {% if view_type != 'kanban' %}active{% endif %}">
+                <i class="bi bi-list-ul"></i> List View
+            </a>
+            <a href="{{ url_for('requests_list', view='kanban') }}" 
+               class="btn btn-outline-primary {% if view_type == 'kanban' %}active{% endif %}">
+                <i class="bi bi-kanban"></i> Kanban View
+            </a>
+        </div>
+    </div>
+    <div class="col-md-6 text-end">
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('requests_list', view=view_type) }}" 
+               class="btn btn-outline-secondary {% if not current_state %}active{% endif %}">
+                All
+            </a>
+            <a href="{{ url_for('requests_list', state='new', view=view_type) }}" 
+               class="btn btn-outline-secondary {% if current_state == 'new' %}active{% endif %}">
+                New
+            </a>
+            <a href="{{ url_for('requests_list', state='in_progress', view=view_type) }}" 
+               class="btn btn-outline-secondary {% if current_state == 'in_progress' %}active{% endif %}">
+                In Progress
+            </a>
+            <a href="{{ url_for('requests_list', state='repaired', view=view_type) }}" 
+               class="btn btn-outline-secondary {% if current_state == 'repaired' %}active{% endif %}">
+                Repaired
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Equipment</th>
+                            <th>Type</th>
+                            <th>State</th>
+                            <th>Scheduled Date</th>
+                            <th>Technician</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in requests %}
+                            <tr class="{% if request.is_overdue %}table-danger{% endif %}">
+                                <td><strong>{{ request.subject }}</strong></td>
+                                <td>{{ request.equipment_name }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'info' if request.request_type == 'preventive' else 'warning' }}">
+                                        {{ request.request_type|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if request.state == 'repaired' %}
+                                        <span class="badge bg-success">Repaired</span>
+                                    {% elif request.state == 'in_progress' %}
+                                        <span class="badge bg-warning">In Progress</span>
+                                    {% elif request.state == 'scrap' %}
+                                        <span class="badge bg-danger">Scrap</span>
+                                    {% else %}
+                                        <span class="badge bg-info">New</span>
+                                    {% endif %}
+                                    {% if request.is_overdue %}
+                                        <span class="badge bg-danger">OVERDUE</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ request.scheduled_date or 'N/A' }}</td>
+                                <td>{{ request.technician_id or 'Unassigned' }}</td>
+                                <td>
+                                    <a href="{{ url_for('request_detail', request_id=request.id) }}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

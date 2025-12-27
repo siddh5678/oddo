@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}{% if team %}Edit{% else %}Create{% endif %} Team - GearGuard+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="bi bi-people"></i> {% if team %}Edit{% else %}Create{% endif %} Maintenance Team</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('teams_list') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Teams
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Team Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">
+                            Team Name <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="name" name="name" required 
+                                onchange="handleTeamNameChange()">
+                            <option value="">-- Select Team Type --</option>
+                            <option value="Electrical Team" {% if team and team.name == 'Electrical Team' %}selected{% endif %}>
+                                Electrical Team
+                            </option>
+                            <option value="Mechanical Team" {% if team and team.name == 'Mechanical Team' %}selected{% endif %}>
+                                Mechanical Team
+                            </option>
+                            <option value="HVAC Team" {% if team and team.name == 'HVAC Team' %}selected{% endif %}>
+                                HVAC Team
+                            </option>
+                            <option value="Plumbing Team" {% if team and team.name == 'Plumbing Team' %}selected{% endif %}>
+                                Plumbing Team
+                            </option>
+                            <option value="IT Support Team" {% if team and team.name == 'IT Support Team' %}selected{% endif %}>
+                                IT Support Team
+                            </option>
+                            <option value="Production Maintenance Team" {% if team and team.name == 'Production Maintenance Team' %}selected{% endif %}>
+                                Production Maintenance Team
+                            </option>
+                            <option value="Quality Control Team" {% if team and team.name == 'Quality Control Team' %}selected{% endif %}>
+                                Quality Control Team
+                            </option>
+                            <option value="Safety & Compliance Team" {% if team and team.name == 'Safety & Compliance Team' %}selected{% endif %}>
+                                Safety & Compliance Team
+                            </option>
+                            <option value="General Maintenance Team" {% if team and team.name == 'General Maintenance Team' %}selected{% endif %}>
+                                General Maintenance Team
+                            </option>
+                            <option value="Emergency Response Team" {% if team and team.name == 'Emergency Response Team' %}selected{% endif %}>
+                                Emergency Response Team
+                            </option>
+                            <option value="CUSTOM">-- Custom Team Name --</option>
+                        </select>
+                        <input type="text" class="form-control mt-2" id="custom_name" name="custom_name" 
+                               value="{% if team and team.name not in ['Electrical Team', 'Mechanical Team', 'HVAC Team', 'Plumbing Team', 'IT Support Team', 'Production Maintenance Team', 'Quality Control Team', 'Safety & Compliance Team', 'General Maintenance Team', 'Emergency Response Team'] %}{{ team.name }}{% endif %}"
+                               placeholder="Enter custom team name" style="display: none;">
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Select from common team types or choose "Custom" to enter your own name
+                        </small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="description" class="form-label">
+                            Description 
+                            <span class="badge bg-info" data-bs-toggle="tooltip" 
+                                  title="Description will be automatically filled based on team type">
+                                <i class="bi bi-magic"></i> Auto-Fill
+                            </span>
+                        </label>
+                        <textarea class="form-control" id="description" name="description" 
+                                  rows="3" placeholder="Team description will be automatically filled...">{{ team.description if team else '' }}</textarea>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Description is automatically generated based on team type. You can edit it if needed.
+                        </small>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person-workspace"></i> Select Technicians <span class="text-danger">*</span>
+                        </label>
+                        <p class="text-muted small mb-3">
+                            Select technicians who will be members of this team. Only team members can be assigned to maintenance requests.
+                        </p>
+                        
+                        {% if technicians %}
+                            <div class="row">
+                                {% for technician in technicians %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check p-3 border rounded hover-shadow">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   id="technician_{{ technician.id }}" 
+                                                   name="technician_{{ technician.id }}"
+                                                   {% if team and technician.id in current_technician_ids %}checked{% endif %}>
+                                            <label class="form-check-label w-100" for="technician_{{ technician.id }}" style="cursor: pointer;">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-person-circle me-2 text-primary fs-5"></i>
+                                                    <div>
+                                                        <strong>{{ technician.name }}</strong>
+                                                        {% if technician.department %}
+                                                            <br><small class="text-muted">
+                                                                <i class="bi bi-building"></i> {{ technician.department }}
+                                                            </small>
+                                                        {% endif %}
+                                                        {% if technician.email %}
+                                                            <br><small class="text-muted">
+                                                                <i class="bi bi-envelope"></i> {{ technician.email }}
+                                                            </small>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i> No technicians available. 
+                                Please create employees and mark them as technicians first.
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save"></i> {% if team %}Update{% else %}Create{% endif %} Team
+                        </button>
+                        <a href="{{ url_for('teams_list') }}" class="btn btn-secondary btn-lg">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Tips</h5>
+            </div>
+            <div class="card-body">
+                <ul class="small mb-0">
+                    <li class="mb-2">Team name should be descriptive (e.g., "Electrical Team", "Mechanical Team")</li>
+                    <li class="mb-2">Select all technicians who will work in this team</li>
+                    <li class="mb-2">Teams can have multiple technicians</li>
+                    <li class="mb-2">Technicians can be added/removed later by editing the team</li>
+                    <li class="mb-2">Equipment will be assigned to teams for maintenance</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-check-circle"></i> After Creation</h5>
+            </div>
+            <div class="card-body">
+                <p class="small mb-0">
+                    Once the team is created, you can:
+                </p>
+                <ul class="small mb-0">
+                    <li>Assign this team to equipment</li>
+                    <li>Team will auto-assign to maintenance requests</li>
+                    <li>Only team members can be assigned as technicians</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hover-shadow:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.2s ease;
+    }
+    
+    .form-check-input:checked ~ .form-check-label {
+        color: #0d6efd;
+    }
+    
+    #custom_name:required {
+        border-color: #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Team descriptions mapping
+    const teamDescriptions = {
+        'Electrical Team': 'Handles all electrical equipment maintenance, repairs, and installations. Specializes in electrical systems, wiring, and power distribution.',
+        'Mechanical Team': 'Manages mechanical equipment maintenance including motors, pumps, conveyors, and mechanical systems. Handles mechanical repairs and installations.',
+        'HVAC Team': 'Specializes in Heating, Ventilation, and Air Conditioning systems. Maintains HVAC units, ductwork, and climate control systems.',
+        'Plumbing Team': 'Handles all plumbing-related maintenance including pipes, fixtures, water systems, and drainage. Manages plumbing repairs and installations.',
+        'IT Support Team': 'Manages IT equipment maintenance including computers, servers, network infrastructure, and software support. Handles IT-related technical issues.',
+        'Production Maintenance Team': 'Focuses on production line equipment maintenance. Ensures production machinery operates efficiently and minimizes downtime.',
+        'Quality Control Team': 'Maintains quality control equipment and systems. Ensures measurement instruments and testing equipment are calibrated and functioning properly.',
+        'Safety & Compliance Team': 'Manages safety equipment maintenance and compliance systems. Ensures all safety equipment meets regulatory standards.',
+        'General Maintenance Team': 'Handles general maintenance tasks across all departments. Provides support for various maintenance needs and routine inspections.',
+        'Emergency Response Team': 'Specialized team for emergency maintenance situations. Available 24/7 for critical equipment failures and urgent repairs.'
+    };
+    
+    function handleTeamNameChange() {
+        const select = document.getElementById('name');
+        const customInput = document.getElementById('custom_name');
+        const descriptionTextarea = document.getElementById('description');
+        
+        if (select.value === 'CUSTOM') {
+            customInput.style.display = 'block';
+            customInput.required = true;
+            customInput.focus();
+            // Clear description for custom team
+            descriptionTextarea.value = '';
+        } else {
+            customInput.style.display = 'none';
+            customInput.required = false;
+            customInput.value = '';
+            
+            // Auto-fill description based on team type
+            if (select.value && teamDescriptions[select.value]) {
+                descriptionTextarea.value = teamDescriptions[select.value];
+                // Add a subtle animation to show it was auto-filled
+                descriptionTextarea.style.backgroundColor = '#e7f3ff';
+                setTimeout(() => {
+                    descriptionTextarea.style.backgroundColor = '';
+                    descriptionTextarea.style.transition = 'background-color 0.5s ease';
+                }, 1000);
+            } else if (select.value) {
+                // If team name exists but no predefined description, keep existing or clear
+                if (!descriptionTextarea.value) {
+                    descriptionTextarea.value = '';
+                }
+            }
+        }
+    }
+    
+    // Handle form submission - use custom name if CUSTOM is selected
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const select = document.getElementById('name');
+        const customInput = document.getElementById('custom_name');
+        
+        if (select.value === 'CUSTOM') {
+            if (!customInput.value.trim()) {
+                e.preventDefault();
+                alert('Please enter a custom team name');
+                customInput.focus();
+                return false;
+            }
+            // Replace the select value with custom name
+            select.value = customInput.value.trim();
+        }
+    });
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        handleTeamNameChange();
+    });
+</script>
+{% endblock %}
+

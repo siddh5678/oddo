@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Equipment - GearGuard+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="bi bi-gear"></i> Equipment</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('equipment_create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Equipment
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Serial Number</th>
+                            <th>Department</th>
+                            <th>Location</th>
+                            <th>Health Score</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for equipment in equipments %}
+                            <tr class="{% if equipment.is_scrapped %}table-secondary{% endif %}">
+                                <td><strong>{{ equipment.name }}</strong></td>
+                                <td>{{ equipment.serial_number or 'N/A' }}</td>
+                                <td>{{ equipment.department or 'N/A' }}</td>
+                                <td>{{ equipment.location or 'N/A' }}</td>
+                                <td>
+                                    {% set health = equipment.health_score %}
+                                    {% set status_class = 'success' if health >= 70 else ('warning' if health >= 40 else 'danger') %}
+                                    <div class="progress" style="height: 20px; width: 100px;">
+                                        <div class="progress-bar bg-{{ status_class }}" role="progressbar" 
+                                             style="width: {{ health }}%">
+                                            {{ health }}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if equipment.is_scrapped %}
+                                        <span class="badge bg-secondary">Scrapped</span>
+                                    {% elif equipment.health_status == 'critical' %}
+                                        <span class="badge bg-danger">Critical</span>
+                                    {% elif equipment.health_status == 'warning' %}
+                                        <span class="badge bg-warning">Warning</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Good</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('equipment_detail', equipment_id=equipment.id) }}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

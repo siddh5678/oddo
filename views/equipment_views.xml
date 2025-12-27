@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Equipment Tree/List View -->
+    <record id="view_equipment_tree" model="ir.ui.view">
+        <field name="name">equipment.tree</field>
+        <field name="model">equipment</field>
+        <field name="arch" type="xml">
+            <tree string="Equipment" decoration-danger="is_scrapped == True">
+                <field name="name"/>
+                <field name="serial_number"/>
+                <field name="department"/>
+                <field name="location"/>
+                <field name="health_score" widget="progressbar"/>
+                <field name="is_scrapped"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Equipment Form View -->
+    <record id="view_equipment_form" model="ir.ui.view">
+        <field name="name">equipment.form</field>
+        <field name="model">equipment</field>
+        <field name="arch" type="xml">
+            <form string="Equipment">
+                <header>
+                    <button name="action_scrap" string="Scrap" type="object" 
+                            class="oe_highlight" attrs="{'invisible': [('is_scrapped', '=', True)]}"/>
+                    <button name="action_unscrap" string="Unscrap" type="object" 
+                            attrs="{'invisible': [('is_scrapped', '=', False)]}"/>
+                    <field name="is_scrapped" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_maintenance_request_view)d" 
+                                type="action" 
+                                class="oe_stat_button" 
+                                icon="fa-wrench"
+                                context="{'default_equipment_id': active_id}">
+                            <field name="maintenance_requests_count" widget="statinfo" string="Requests"/>
+                        </button>
+                        <button name="%(action_maintenance_request_view)d" 
+                                type="action" 
+                                class="oe_stat_button" 
+                                icon="fa-exclamation-triangle"
+                                context="{'default_equipment_id': active_id, 'search_default_open': 1}">
+                            <field name="open_requests_count" widget="statinfo" string="Open"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="serial_number"/>
+                            <field name="department"/>
+                            <field name="location"/>
+                        </group>
+                        <group>
+                            <field name="assigned_employee_id" options="{'no_create': True}"/>
+                            <field name="maintenance_team_id" options="{'no_create': True}"/>
+                            <field name="purchase_date"/>
+                            <field name="warranty_end_date"/>
+                        </group>
+                    </group>
+                    <group string="Health Status">
+                        <field name="health_score" widget="progressbar" 
+                               options="{'max_value': 100}"/>
+                        <label for="health_score" string="Health Score"/>
+                        <div>
+                            <p class="text-muted">
+                                Health score is calculated based on breakdown count and overdue requests.
+                                Score below 40 indicates critical condition requiring immediate attention.
+                            </p>
+                        </div>
+                    </group>
+                    <notebook>
+                        <page string="Maintenance History">
+                            <field name="maintenance_requests_ids" nolabel="1">
+                                <tree>
+                                    <field name="subject"/>
+                                    <field name="request_type"/>
+                                    <field name="state" widget="badge" 
+                                           decoration-success="state == 'repaired'"
+                                           decoration-warning="state == 'in_progress'"
+                                           decoration-info="state == 'new'"/>
+                                    <field name="scheduled_date"/>
+                                    <field name="technician_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Equipment Search View -->
+    <record id="view_equipment_search" model="ir.ui.view">
+        <field name="name">equipment.search</field>
+        <field name="model">equipment</field>
+        <field name="arch" type="xml">
+            <search string="Equipment">
+                <field name="name"/>
+                <field name="serial_number"/>
+                <field name="department"/>
+                <field name="location"/>
+                <filter string="Scrapped" name="scrapped" domain="[('is_scrapped', '=', True)]"/>
+                <filter string="Active" name="active" domain="[('is_scrapped', '=', False), ('active', '=', True)]"/>
+                <filter string="Critical Health" name="critical" domain="[('health_score', '&lt;', 40)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Department" name="group_department" context="{'group_by': 'department'}"/>
+                    <filter string="Maintenance Team" name="group_team" context="{'group_by': 'maintenance_team_id'}"/>
+                    <filter string="Location" name="group_location" context="{'group_by': 'location'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Equipment Action -->
+    <record id="action_equipment_view" model="ir.actions.act_window">
+        <field name="name">Equipment</field>
+        <field name="res_model">equipment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_equipment_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first equipment!
+            </p>
+            <p>
+                Track all your assets and equipment with health scoring and maintenance history.
+            </p>
+        </field>
+    </record>
+</odoo>
+

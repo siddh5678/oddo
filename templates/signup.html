@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - GearGuard+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .signup-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 40px 20px;
+    }
+    
+    .signup-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        padding: 40px;
+        width: 100%;
+        max-width: 500px;
+    }
+    
+    .signup-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .signup-header h1 {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    
+    .signup-header p {
+        color: #6c757d;
+        margin: 0;
+    }
+    
+    .form-floating {
+        margin-bottom: 15px;
+    }
+    
+    .btn-signup {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-signup:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .login-link {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .icon-wrapper {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <div class="signup-card">
+        <div class="signup-header">
+            <div class="icon-wrapper">
+                <i class="bi bi-person-plus"></i>
+            </div>
+            <h1>Create Account</h1>
+            <p>Join GearGuard+ today</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('signup') }}">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="full_name" name="full_name" 
+                       placeholder="Full Name">
+                <label for="full_name"><i class="bi bi-person-badge"></i> Full Name (Optional)</label>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="username" name="username" 
+                       placeholder="Username" required autofocus>
+                <label for="username"><i class="bi bi-person"></i> Username *</label>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="email" name="email" 
+                       placeholder="Email" required>
+                <label for="email"><i class="bi bi-envelope"></i> Email *</label>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="password" name="password" 
+                       placeholder="Password" required minlength="6">
+                <label for="password"><i class="bi bi-lock"></i> Password * (min 6 characters)</label>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                       placeholder="Confirm Password" required>
+                <label for="confirm_password"><i class="bi bi-lock-fill"></i> Confirm Password *</label>
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-signup">
+                    <i class="bi bi-person-plus"></i> Create Account
+                </button>
+            </div>
+        </form>
+        
+        <div class="login-link">
+            <p class="text-muted mb-0">Already have an account?</p>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-primary mt-2">
+                <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

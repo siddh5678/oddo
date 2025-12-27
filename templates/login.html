@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Login - GearGuard+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 40px 20px;
+    }
+    
+    .login-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        padding: 40px;
+        width: 100%;
+        max-width: 450px;
+    }
+    
+    .login-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .login-header h1 {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    
+    .login-header p {
+        color: #6c757d;
+        margin: 0;
+    }
+    
+    .form-floating {
+        margin-bottom: 20px;
+    }
+    
+    .btn-login {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .signup-link {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .icon-wrapper {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="icon-wrapper">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h1>GearGuard+</h1>
+            <p>Maintenance Management System</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="username" name="username" 
+                       placeholder="Username" required autofocus>
+                <label for="username"><i class="bi bi-person"></i> Username</label>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="password" name="password" 
+                       placeholder="Password" required>
+                <label for="password"><i class="bi bi-lock"></i> Password</label>
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-login">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </button>
+            </div>
+        </form>
+        
+        <div class="signup-link">
+            <p class="text-muted mb-0">Don't have an account?</p>
+            <a href="{{ url_for('signup') }}" class="btn btn-outline-primary mt-2">
+                <i class="bi bi-person-plus"></i> Sign Up
+            </a>
+        </div>
+        
+        <div class="mt-4 text-center">
+            <small class="text-muted">
+                <strong>Demo:</strong> admin / admin123
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

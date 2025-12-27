@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}{{ equipment.name }} - GearGuard+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="bi bi-gear"></i> {{ equipment.name }}</h1>
+        <p class="text-muted">Equipment Details</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('equipment_list') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Equipment Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="40%">Serial Number:</th>
+                        <td>{{ equipment.serial_number or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Department:</th>
+                        <td>{{ equipment.department or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Location:</th>
+                        <td>{{ equipment.location or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Equipment Operator:</th>
+                        <td>
+                            {% if equipment.assigned_employee_id %}
+                                {% if equipment.assigned_employee %}
+                                    <i class="bi bi-person-badge"></i> {{ equipment.assigned_employee.name }}
+                                {% else %}
+                                    Employee ID: {{ equipment.assigned_employee_id }}
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">Not assigned</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Maintenance Team:</th>
+                        <td>
+                            {% if equipment.maintenance_team_id %}
+                                <span class="badge bg-primary">
+                                    <i class="bi bi-people"></i> Team ID: {{ equipment.maintenance_team_id }}
+                                </span>
+                            {% else %}
+                                <span class="text-muted">Not assigned</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Purchase Date:</th>
+                        <td>{{ equipment.purchase_date or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Warranty End:</th>
+                        <td>{{ equipment.warranty_end_date or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Status:</th>
+                        <td>
+                            {% if equipment.is_scrapped %}
+                                <span class="badge bg-secondary">Scrapped</span>
+                            {% else %}
+                                <span class="badge bg-success">Active</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Health Status</h5>
+            </div>
+            <div class="card-body">
+                {% set health = equipment.health_score %}
+                {% set status_class = 'success' if health >= 70 else ('warning' if health >= 40 else 'danger') %}
+                {% set status_text = 'Good' if health >= 70 else ('Warning' if health >= 40 else 'Critical') %}
+                
+                <h3 class="text-{{ status_class }}">{{ health }}/100</h3>
+                <div class="progress mb-3" style="height: 30px;">
+                    <div class="progress-bar bg-{{ status_class }}" role="progressbar" 
+                         style="width: {{ health }}%">
+                        {{ health }}%
+                    </div>
+                </div>
+                <p class="mb-0">
+                    <span class="badge bg-{{ status_class }}">{{ status_text }}</span>
+                </p>
+                <hr>
+                <p class="small text-muted">
+                    Health score is calculated based on breakdown count and overdue requests.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Stats</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4>{{ equipment.maintenance_requests_count }}</h4>
+                        <p class="text-muted small">Total Requests</p>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-warning">{{ equipment.open_requests_count }}</h4>
+                        <p class="text-muted small">Open Requests</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Maintenance History</h5>
+                <a href="{{ url_for('request_create') }}?equipment_id={{ equipment.id }}" 
+                   class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus-circle"></i> New Request
+                </a>
+            </div>
+            <div class="card-body">
+                {% if requests %}
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Type</th>
+                                <th>State</th>
+                                <th>Scheduled Date</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in requests %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('request_detail', request_id=req.id) }}">
+                                            {{ req.subject }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'info' if req.request_type == 'preventive' else 'warning' }}">
+                                            {{ req.request_type|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if req.state == 'repaired' %}
+                                            <span class="badge bg-success">Repaired</span>
+                                        {% elif req.state == 'in_progress' %}
+                                            <span class="badge bg-warning">In Progress</span>
+                                        {% elif req.state == 'scrap' %}
+                                            <span class="badge bg-danger">Scrap</span>
+                                        {% else %}
+                                            <span class="badge bg-info">New</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ req.scheduled_date or 'N/A' }}</td>
+                                    <td>{{ req.duration or 'N/A' }} {% if req.duration %}hrs{% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-muted">No maintenance requests yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
